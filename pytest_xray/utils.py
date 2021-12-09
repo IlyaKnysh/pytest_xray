@@ -5,6 +5,7 @@ import pytest
 import requests
 
 from .constants import XRAY_MARKER_NAME
+from . import execution
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -22,7 +23,7 @@ def associate_marker_metadata_for(item):
         return
 
     test_key = marker.kwargs["test_key"]
-    test_exec_key = marker.kwargs["test_exec_key"]
+    test_exec_key = marker.kwargs.get("test_exec_key") if marker.kwargs.get("test_exec_key") else execution.execution_id
     _test_keys[item.nodeid] = test_key, test_exec_key
 
 
