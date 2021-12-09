@@ -5,6 +5,7 @@ import pytest
 from .constants import XRAY_API_BASE_URL, XRAY_PLUGIN
 from .models import XrayTestReport
 from .utils import PublishXrayResults, associate_marker_metadata_for, get_test_key_for
+from . import execution
 
 JIRA_XRAY_FLAG = "--jira-xray"
 
@@ -44,14 +45,18 @@ def pytest_terminal_summary(terminalreporter):
     test_reports = []
     if "passed" in terminalreporter.stats:
         for each in terminalreporter.stats["passed"]:
-            test_key, test_exec_key = get_test_key_for(each)
+            keys = get_test_key_for(each)
+            test_key = keys[0]
+            test_exec_key = keys[1] if keys[1] else execution.execution_id
             if test_key:
                 report = XrayTestReport.as_passed(test_key, test_exec_key, each.duration)
                 test_reports.append(report)
 
     if "failed" in terminalreporter.stats:
         for each in terminalreporter.stats["failed"]:
-            test_key, test_exec_key = get_test_key_for(each)
+            keys = get_test_key_for(each)
+            test_key = keys[0]
+            test_exec_key = keys[1] if keys[1] else execution.execution_id
             if test_key:
                 report = XrayTestReport.as_failed(
                     test_key, test_exec_key, each.duration, each.longreprtext
