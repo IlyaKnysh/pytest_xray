@@ -48,7 +48,8 @@ def pytest_terminal_summary(terminalreporter):
             keys = get_test_key_for(each)
             test_key = keys[0]
             test_exec_key = keys[1] if keys[1] else execution.execution_id
-            if test_key:
+            test_key = [test_key] if isinstance(test_key, str) else test_key
+            for test_key in test_key:
                 report = XrayTestReport.as_passed(test_key, test_exec_key, each.duration)
                 test_reports.append(report)
 
@@ -58,10 +59,12 @@ def pytest_terminal_summary(terminalreporter):
             test_key = keys[0]
             test_exec_key = keys[1] if keys[1] else execution.execution_id
             if test_key:
-                report = XrayTestReport.as_failed(
-                    test_key, test_exec_key, each.duration, each.longreprtext
-                )
-                test_reports.append(report)
+                test_key = [test_key] if isinstance(test_key, str) else test_key
+                for test_key in test_key:
+                    report = XrayTestReport.as_failed(
+                        test_key, test_exec_key, each.duration, each.longreprtext
+                    )
+                    test_reports.append(report)
 
     publish_results = terminalreporter.config.pluginmanager.get_plugin(XRAY_PLUGIN)
 
