@@ -1,14 +1,15 @@
 import json
 import logging
 
-import pytest
 import requests
 
-from .constants import XRAY_MARKER_NAME
 from . import execution
+from .constants import XRAY_MARKER_NAME
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+CONSOLE = logging.StreamHandler()
+logger.addHandler(CONSOLE)
 
 _test_keys = {}
 
@@ -41,11 +42,14 @@ class PublishXrayResults:
         self.client_secret = client_secret
 
     def __call__(self, *report_objs):
-        bearer_token = self.authenticate()
-        for a_dict in self._test_execution_summaries(*report_objs):
-            self._post(a_dict, bearer_token)
+        try:
+            bearer_token = self.authenticate()
+            for a_dict in self._test_execution_summaries(*report_objs):
+                self._post(a_dict, bearer_token)
 
-        logger.info("Successfully posted all test execution results to Xray!")
+            logger.info("Successfully posted all test execution results to Xray!")
+        except Exception as ex:
+            logger.info(f"Failed to post results to xray: {ex}")
 
     def _post(self, a_dict, bearer_token):
         payload = json.dumps(a_dict)
