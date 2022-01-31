@@ -17,7 +17,7 @@ setup(
     name="pytest_xray",
     author="Neville Tummon",
     author_email="nt.devs@gmail.com",
-    version="0.2.1",
+    version="0.2.2",
     python_requires=">=3.6.6",
     long_description=long_description(),
     long_description_content_type="text/markdown",
