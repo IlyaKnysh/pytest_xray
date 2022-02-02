@@ -49,9 +49,12 @@ def pytest_terminal_summary(terminalreporter):
             test_key = keys[0]
             test_exec_key = keys[1] if keys[1] else execution.execution_id
             test_key = [test_key] if isinstance(test_key, str) else test_key
-            for test_key in test_key:
-                report = XrayTestReport.as_passed(test_key, test_exec_key, each.duration)
-                test_reports.append(report)
+            try:
+                for test_key in test_key:
+                    report = XrayTestReport.as_passed(test_key, test_exec_key, each.duration)
+                    test_reports.append(report)
+            except TypeError:
+                raise Exception(f'Xray mark is missed for {terminalreporter.config.args}')
 
     if "failed" in terminalreporter.stats:
         for each in terminalreporter.stats["failed"]:
